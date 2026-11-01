@@ -1,0 +1,18 @@
+# Blank SSH box for teammates:  ssh -p 2222 <name>@<host>
+#   docker compose -f devbox/docker-compose.yml up -d --build
+name: policylab-devbox
+
+services:
+  devbox:
+    build: .
+    hostname: policylab-devbox
+    ports: ["2222:22"]
+    volumes:
+      - home:/home
+      - hostkeys:/etc/ssh/keys
+      - ./passwords.txt:/config/users.txt:ro
+    restart: unless-stopped
+
+volumes:
+  home:
+  hostkeys:

@@ -36,6 +36,7 @@ docker compose run --rm web python manage.py test
 | `docker-compose.yml`, `web/Dockerfile` | Local and VM setup | Role 3 |
 | `inference/` | SLURM scripts and model serving | Role 4 |
 | `training/` | Fine-tuning and evaluation | Role 5 |
+| `devbox/` | Blank Debian box teammates SSH into (port 2222) | Role 3 |
 
 ## Public demo on mountainbluebells.com
 
