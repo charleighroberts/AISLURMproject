@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Link expired · DSU Policy Lab{% endblock %}
+{% block content %}
+  <h1>This link has expired</h1>
+  <p>Sign-in links work once and expire after 15 minutes.</p>
+  <p><a href="{% url 'accounts:login' %}">Send a new link</a></p>
+{% endblock %}

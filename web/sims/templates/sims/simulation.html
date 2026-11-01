@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ sim.scenario.title }} · DSU Policy Lab{% endblock %}
+{% block content %}
+  <p><a href="{% url 'sims:scenario_list' %}">← All scenarios</a></p>
+  <h1>{{ sim.scenario.title }}</h1>
+  <div class="prompt">{{ sim.scenario.background }}</div>
+  <div class="card"><strong>Question:</strong> <span class="prompt">{{ sim.scenario.prompt }}</span></div>
+
+  {% if sim.is_submitted %}
+    <h2>Your response</h2>
+    <div class="card prompt">{{ sim.user_response }}</div>
+  {% else %}
+    <form method="post" action="{% url 'sims:submit' sim.pk %}">
+      {% csrf_token %}
+      <label for="response">Your response</label>
+      <textarea id="response" name="response" required></textarea>
+      <p class="muted">The AI responses are shown after you submit. You can't edit your response afterward.</p>
+      <p><button>Submit</button></p>
+    </form>
+  {% endif %}
+
+  <h2>AI agents</h2>
+  {% for response in responses %}
+    <div class="card agent" id="agent-{{ response.pk }}" data-status="{{ response.status }}">
+      <strong>{{ response.label }}</strong>
+      <div class="status"></div>
+      <div class="text">{% if sim.is_submitted %}{{ response.text }}{% endif %}</div>
+    </div>
+  {% endfor %}
+
+  <script>
+    (function () {
+      const submitted = {{ sim.is_submitted|yesno:"true,false" }};
+      const statusText = {
+        queued: "Waiting for a GPU…",
+        running: "Generating…",
+        done: submitted ? "" : "Ready. Shown after you submit.",
+        failed: "This agent couldn't respond.",
+      };
+      function render(id, status, text) {
+        const card = document.getElementById("agent-" + id);
+        card.querySelector(".status").textContent = status in statusText ? statusText[status] : status;
+        if (text !== undefined) card.querySelector(".text").textContent = text;
+      }
+      document.querySelectorAll(".agent").forEach(function (card) {
+        render(card.id.replace("agent-", ""), card.dataset.status);
+      });
+
+      async function poll() {
+        const res = await fetch("{% url 'sims:status' sim.pk %}");
+        if (!res.ok) return;
+        const data = await res.json();
+        let pending = false;
+        data.agents.forEach(function (agent) {
+          render(agent.id, agent.status, agent.text);
+          if (agent.status === "queued" || agent.status === "running") pending = true;
+        });
+        if (pending) setTimeout(poll, 2000);
+      }
+      poll();
+    })();
+  </script>
+{% endblock %}

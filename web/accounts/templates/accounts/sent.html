@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Check your email · DSU Policy Lab{% endblock %}
+{% block content %}
+  <h1>Check your email</h1>
+  <p>We sent you a sign-in link. It expires in 15 minutes and works once.</p>
+  {% if show_dev_inbox %}
+    <p class="card muted">Running locally? Emails go to Mailpit: <a href="http://localhost:8025" target="_blank">localhost:8025</a></p>
+  {% endif %}
+  <p><a href="{% url 'accounts:login' %}">Use a different email</a></p>
+{% endblock %}

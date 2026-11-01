@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Sign in · DSU Policy Lab{% endblock %}
+{% block content %}
+  <h1>Sign in to the DSU Policy Lab</h1>
+  <form method="post" class="card">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <p>Click below to finish signing in.</p>
+    <button>Sign in</button>
+  </form>
+{% endblock %}

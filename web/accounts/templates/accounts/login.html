@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Sign in · DSU Policy Lab{% endblock %}
+{% block content %}
+  <h1>Sign in</h1>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+  {% if google %}
+    <div class="card">
+      <p><a class="button" href="{% url 'accounts:google_start' %}">Sign in with Google</a></p>
+      {% if site_launch_url %}
+        <p class="muted">Already signed in to mountainbluebells.com? <a href="{{ site_launch_url }}">Continue with that account</a>.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if magic_links %}
+    <form method="post" class="card">
+      {% csrf_token %}
+      <p class="muted">Enter your DSU email address and we'll send you a sign-in link. No password needed.</p>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ email }}" placeholder="first.last@trojans.dsu.edu" required autofocus>
+      <p><button>Send sign-in link</button></p>
+    </form>
+  {% endif %}
+{% endblock %}

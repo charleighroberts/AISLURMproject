@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Choose a scenario</h1>
+  {% for scenario in scenarios %}
+    <div class="card">
+      <h2 style="margin-top: 0">{{ scenario.title }}</h2>
+      <p class="muted">{{ scenario.background|truncatewords:40 }}</p>
+      <form method="post" action="{% url 'sims:start' scenario.pk %}">
+        {% csrf_token %}
+        <button>Start</button>
+      </form>
+    </div>
+  {% empty %}
+    <p class="muted">No scenarios yet. An admin can add them from the Admin page.</p>
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,30 @@
+# Public demo at https://mountainbluebells.com/AISLURMproject/app/
+# Caddy strips the /AISLURMproject/app prefix and forwards to 127.0.0.1:36176 (not reachable from outside this PC).
+#
+#   docker compose -f docker-compose.site.yml up -d --build
+name: aislurm-site
+
+services:
+  web:
+    build: ./web
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn config.wsgi -b 0.0.0.0:8000 -w 3"
+    ports: ["127.0.0.1:36176:8000"]
+    env_file: .env.site
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    env_file: .env.site
+    volumes: ["site-pgdata:/var/lib/postgresql/data"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  site-pgdata:

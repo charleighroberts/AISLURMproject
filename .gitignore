@@ -1,0 +1,9 @@
+.env
+.env.site
+__pycache__/
+*.pyc
+db.sqlite3
+staticfiles/
+.venv/
+*.log
+devbox/passwords.txt

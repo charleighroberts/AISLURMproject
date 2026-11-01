@@ -1,0 +1,37 @@
+# Local development stack. On the VM the same file runs with production settings in .env.
+services:
+  web:
+    build: ./web
+    ports: ["8000:8000"]       # the site: http://localhost:8000
+    env_file: .env
+    volumes: ["./web:/app"]    # code changes reload without rebuilding
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  db:
+    image: postgres:16
+    env_file: .env             # reads POSTGRES_DB / POSTGRES_USER / POSTGRES_PASSWORD
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit
+    ports: ["8025:8025"]       # fake inbox for magic links: http://localhost:8025
+
+  # Optional local model server: docker compose --profile llm up
+  ollama:
+    image: ollama/ollama
+    profiles: ["llm"]
+    ports: ["11434:11434"]
+    volumes: ["ollama:/root/.ollama"]
+
+volumes:
+  pgdata:
+  ollama:
