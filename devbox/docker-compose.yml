@@ -7,10 +7,11 @@ services:
     build: .
     hostname: policylab-devbox
     ports: ["2222:22"]
+    cap_add: [NET_ADMIN]   # only for the entrypoint's firewall; dropped before SSH starts
     volumes:
       - home:/home
       - hostkeys:/etc/ssh/keys
-      - ./passwords.txt:/config/users.txt:ro
+      - ./keys:/config/keys:ro
     restart: unless-stopped
 
 volumes:
